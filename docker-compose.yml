@@ -1,0 +1,28 @@
+services:
+  contact-api:
+    build: .
+    restart: always
+    environment:
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - TO_EMAIL=${TO_EMAIL}
+    volumes:
+      - contact-rate-data:/data
+    networks:
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.o3zone-contact.rule=Host(`o3.zone`) && PathPrefix(`/api/contact`)"
+      - "traefik.http.routers.o3zone-contact.priority=1000"
+      - "traefik.http.routers.o3zone-contact.entrypoints=websecure"
+      - "traefik.http.routers.o3zone-contact.tls=true"
+      - "traefik.http.services.o3zone-contact.loadbalancer.server.port=8000"
+
+volumes:
+  contact-rate-data:
+
+networks:
+  dokploy-network:
+    external: true
